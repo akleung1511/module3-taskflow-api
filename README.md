@@ -50,7 +50,7 @@ Used Render's free hosting plan to deploy the same Dockerized Spring Boot applic
 
 ## Stretch Goals (Optional)
 
-**Progress: 2 of 4 TaskFlow-related stretch goals completed (Options 1 and 4).**
+**Progress: 3 of 5 TaskFlow-related stretch goals completed (Options 1 , 4 and 5).**
 
 ### Option 1: Add a CI Pipeline — Completed
 
@@ -142,6 +142,169 @@ The versioned tags `1.0.0` and `1.0.1` remain available even when `latest` chang
 **Docker Hub Tags Screenshot:**
 
 ![Docker Hub Versioned Tags](screenshots/dockerhub-tags.png)
+
+
+
+### Option 5: Security Check with OWASP Dependency-Check — Completed
+
+#### Objective
+
+Perform a dependency vulnerability scan using OWASP Dependency-Check, identify known security vulnerabilities, apply appropriate fixes, and document any remaining findings.
+
+This security check was performed locally in WSL2 Ubuntu using Java 21, Maven and OWASP Dependency-Check 13.0.0.
+
+#### 1. Running the Security Scan
+
+The following command was used:
+
+```bash
+mvn org.owasp:dependency-check-maven:13.0.0:check -DnvdApiKeyEnvironmentVariable=NVD_API_KEY
+```
+
+The NVD API key was supplied through a local environment variable rather than being committed to the repository.
+
+The scanner generated the HTML report at:
+
+```text
+target/dependency-check-report.html
+```
+
+#### 2. Initial Scan Results
+
+Date: 3 November 2026
+
+| Metric | Result |
+|---|---:|
+| Dependencies scanned | 129 |
+| Unique dependencies | 52 |
+| Vulnerable dependencies | 5 |
+| Reported vulnerability findings | 16 |
+| Suppressed vulnerabilities | 0 |
+| Maven scan result | BUILD SUCCESS |
+
+The initial scan identified vulnerabilities associated with:
+
+- Apache Tomcat 11.0.24
+- Netty Transport 4.2.17.Final
+- Kotlin Standard Library 2.3.21
+- Kotlin Standard Library Common 1.9.10
+- Spring Boot DevTools 4.1.1
+
+#### 3. Security Fixes Applied
+
+Two targeted dependency updates were made in `pom.xml`.
+
+| Dependency | Previous version | Updated version |
+|---|---|---|
+| Apache Tomcat | 11.0.24 | 11.0.25 |
+| Netty | 4.2.17.Final | 4.2.18.Final |
+
+The following Maven properties were added:
+
+```xml
+<tomcat.version>11.0.25</tomcat.version>
+<netty.version>4.2.18.Final</netty.version>
+```
+
+These versions were selected based on the fixes identified in the OWASP vulnerability report.
+
+The Maven dependency tree was used to confirm that the updated Tomcat and Netty libraries were correctly resolved.
+
+#### 4. Verification After Security Updates
+
+The application was tested using:
+
+```bash
+mvn clean verify
+```
+
+Results:
+
+- Tests run: 1
+- Failures: 0
+- Errors: 0
+- Skipped: 0
+- Maven result: BUILD SUCCESS
+
+The application compiled and packaged successfully after the dependency updates.
+
+#### 5. OWASP Rescan Results
+
+OWASP Dependency-Check was run again after updating Tomcat and Netty.
+
+| Metric | Before fixes | After fixes |
+|---|---:|---:|
+| Vulnerable dependencies | 5 | 3 |
+| Reported vulnerability findings | 16 | 4 |
+| Tomcat findings | 11 | 0 |
+| Netty findings | 1 | 0 |
+| Kotlin findings | 3 | 3 |
+| Spring Boot DevTools findings | 1 | 1 |
+
+**Result: 12 of 16 reported findings were cleared, representing a 75% reduction.**
+
+The rescan completed successfully using the previously downloaded NVD database.
+
+#### 6. Remaining Vulnerabilities and Assessment
+
+Four reported vulnerability findings remain associated with three dependency files.
+
+**Kotlin Standard Library — CVE-2026-53914**
+
+The report flags Kotlin runtime libraries associated with the Spring AI OpenAI integration. The vulnerability description concerns unsafe deserialization of Kotlin build-cache metadata.
+
+The applicability to this Java-based application has not been confirmed. The runtime libraries were not upgraded solely on the basis of this finding, pending further verification of affected components and compatible dependency versions.
+
+**Kotlin Standard Library Common — CVE-2026-53914 and CVE-2020-29582**
+
+The dependency is introduced transitively through OkHttp and Okio.
+
+CVE-2020-29582 concerns insecure temporary-file permissions in older Kotlin versions. Further verification is required to establish whether the reported runtime dependency and affected functionality present an exploitable risk in TaskFlow.
+
+**Spring Boot DevTools — CVE-2022-31691**
+
+The report associates Spring Boot DevTools 4.1.1 with CVE-2022-31691.
+
+However, the published vulnerability description concerns Spring Tools IDE and VS Code extensions using SnakeYAML, rather than necessarily the Spring Boot DevTools runtime dependency.
+
+This is a possible product-identification false positive. No suppression was applied because the assessment has not been fully validated.
+
+**Outstanding action:** Review applicable vendor advisories and compatible dependency updates before considering the remaining findings resolved.
+
+#### 7. Credential and Secret Management Check
+
+A preliminary search of tracked project files was performed using:
+
+```bash
+git grep -n -i -E 'api[_-]?key|secret|password|token' -- ':!README.md' ':!pom.xml'
+```
+
+The review confirmed the following configurations:
+
+- Docker Hub credentials are referenced using GitHub Actions secrets.
+- The OpenAI API key is referenced using the `OPENAI_API_KEY` environment variable.
+- Maven wrapper files contain standard environment-variable references for credentials.
+- No obvious hardcoded credential values were identified in the reviewed search results.
+
+This was a preliminary check of tracked files, not a comprehensive secret audit of Git history or untracked files.
+
+#### 8. Scan Limitations
+
+- OWASP Dependency-Check is a best-effort vulnerability scanner and may produce false positives or false negatives.
+- The .NET Assembly Analyzer could not initialise because the required .NET runtime was not installed.
+- The Sonatype OSS Index Analyzer was disabled because authentication credentials were unavailable.
+- The NVD-based analysis completed successfully.
+- The scan results do not establish that all application security risks have been eliminated.
+
+#### 9. Conclusion
+
+Stretch Goal Option 5 was completed by performing a local OWASP Dependency-Check scan, analysing its findings, applying targeted Tomcat and Netty security updates, and verifying the application build.
+
+The reported vulnerability findings decreased from 16 to 4.
+
+The remaining findings have been documented for further applicability assessment and remediation. No unverified findings were suppressed.
+
+The application passed Maven verification after the dependency updates.
 
 ### Other Stretch Goals
 
