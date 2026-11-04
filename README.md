@@ -50,9 +50,9 @@ Used Render's free hosting plan to deploy the same Dockerized Spring Boot applic
 
 ## Stretch Goals (Optional)
 
-**Progress: 3 of 5 TaskFlow-related stretch goals completed (Options 1 , 4 and 5).**
+**Progress: 4 of 5 TaskFlow-related stretch goals completed (Options 1, 2, 4 and 5).**
 
-### Option 1: Add a CI Pipeline — Completed
+### Stretch Goal Option 1: Add a CI Pipeline — Completed
 
 Implemented a GitHub Actions Continuous Integration (CI) pipeline that automatically builds, tests and publishes the TaskFlow API Docker image to Docker Hub whenever changes are pushed to the `main` branch.
 
@@ -108,7 +108,32 @@ No Docker Hub credentials are hardcoded in the workflow file.
 
 ![Docker Hub CI Image Tags](screenshots/dockerhub-ci-tags.png)
 
-### Option 4: Publish Versioned Docker Images — Completed
+### Stretch Goal Option 2 — Frontend Deployment (Netlify)
+
+**Status:** Completed
+
+A simple TaskFlow frontend was developed using HTML,
+CSS and JavaScript and deployed to Netlify.
+
+**Live Frontend:**
+https://ntu-taskflow-frontend.netlify.app
+
+**Live Backend API:**
+https://module3-taskflow-api-h255.onrender.com/api/tasks
+
+**Implementation:**
+- Frontend files are located in the `frontend/` directory.
+- JavaScript fetches task data from the deployed Render API.
+- Displays "No tasks available." when the API returns an empty list.
+- Spring Boot CORS configuration allows requests from Netlify.
+- Live frontend and backend connection successfully verified.
+
+**Deployment Evidence:**
+
+![TaskFlow Netlify Frontend](screenshots/netlify-frontend.png)
+
+
+### Stretch Goal Option 4: Publish Versioned Docker Images — Completed
 
 Successfully published two versions of the TaskFlow API Docker image to Docker Hub using Semantic Versioning (MAJOR.MINOR.PATCH).
 
@@ -145,7 +170,7 @@ The versioned tags `1.0.0` and `1.0.1` remain available even when `latest` chang
 
 
 
-### Option 5: Security Check with OWASP Dependency-Check — Completed
+### Stretch Goal Option 5: Security Check with OWASP Dependency-Check — Completed
 
 #### Objective
 
