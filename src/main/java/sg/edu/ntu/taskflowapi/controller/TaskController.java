@@ -22,8 +22,9 @@ import org.springframework.web.bind.annotation.*;
 // @RequestMapping sets the base URL for all endpoints.
 @RestController
 @RequestMapping("/api/tasks")
+@CrossOrigin(origins = "http://localhost:5500")
 public class TaskController {
-
+    
     private final TaskService taskService;
     private final ChatClient chatClient;
 
