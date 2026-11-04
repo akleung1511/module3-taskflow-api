@@ -7,6 +7,10 @@ async function loadTasks() {
     const tasks = await response.json();
 
     console.log(tasks);
+    
+    if (tasks.length === 0) {
+    taskList.textContent = "No tasks available.";
+}
 }
 
 loadTasks();
