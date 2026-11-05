@@ -50,7 +50,7 @@ Used Render's free hosting plan to deploy the same Dockerized Spring Boot applic
 
 ## Stretch Goals (Optional)
 
-**Progress: 4 of 5 TaskFlow-related stretch goals completed (Options 1, 2, 4 and 5).**
+**Progress: All 5 optional stretch goals completed (Options 1, 2, 3, 4 and 5).**
 
 ### Stretch Goal Option 1: Add a CI Pipeline — Completed
 
@@ -132,6 +132,87 @@ https://module3-taskflow-api-h255.onrender.com/api/tasks
 
 ![TaskFlow Netlify Frontend](screenshots/netlify-frontend.png)
 
+
+### Stretch Goal Option 3: Deploy Simple CRM — Completed
+
+**Status:** Completed
+
+Deployed the Simple CRM application developed during earlier NTU modules as a full-stack cloud application.
+
+The React frontend is hosted on Netlify, the Spring Boot REST API is deployed on Render using a Docker image published to Docker Hub, and customer information is stored in PostgreSQL.
+
+#### Live Deployment Links
+
+| Component | Link |
+|---|---|
+| React Frontend (Netlify) | https://simple-crm-web-akleung1511.netlify.app |
+| Spring Boot API (Render) | https://simple-crm-lite.onrender.com/customers |
+| Frontend GitHub Repository | https://github.com/akleung1511/simple-crm-web |
+| Backend GitHub Repository | https://github.com/akleung1511/simple-crm-lite |
+| Docker Hub Image | https://hub.docker.com/r/andrewl1511/simple-crm-lite |
+
+#### Demo Login Credentials
+
+The following demonstration account can be used by the lecturer to access the CRM interface.
+
+| Field | Value |
+|---|---|
+| Email | `daniel@simplesystems.io` |
+| Password | `password123` |
+
+**Note:** This is a demonstration-only frontend login, not production-grade authentication. The Spring Boot customer API does not enforce server-side authentication. The deployed database should contain only fictitious demonstration customer records.
+
+#### Implementation
+
+**Backend:**
+- Built using Spring Boot, Java 21, Spring Data JPA and PostgreSQL.
+- Implemented REST endpoints for customer Create, Read, Update and Delete operations.
+- Created a multi-stage Dockerfile.
+- Built and published the backend Docker image to Docker Hub.
+- Deployed the backend Docker image to Render.
+- Connected the deployed application to Render PostgreSQL.
+- Configured CORS to permit requests from the deployed Netlify frontend.
+
+**Frontend:**
+- Built using React and Vite.
+- Updated the customer pages to match the deployed Spring Boot API fields.
+- Deployed the production frontend to Netlify.
+- Configured `VITE_API_BASE` to use the deployed Render backend URL.
+- Verified that the frontend retrieves customer records from the cloud database.
+
+#### Deployment and Functional Testing
+
+| Test | Result |
+|---|---|
+| Spring Boot Maven verification | Passed |
+| React ESLint check | Passed |
+| React production build | Passed |
+| Render backend deployment | Passed |
+| Netlify frontend deployment | Passed |
+| Cross-origin API request (CORS) | Passed |
+| Retrieve customer records | Passed |
+| Create a test customer | Passed |
+| Update a test customer | Passed |
+| Delete a test customer | Passed |
+| PostgreSQL data persistence | Verified |
+| Public frontend access | Verified |
+
+The deployed API returned HTTP 200 with the correct `Access-Control-Allow-Origin` header for the Netlify domain.
+
+The React dashboard displayed four existing customer records from the deployed database.
+
+A temporary NTU Test customer was used to validate Create, Update, Delete and data persistence operations.
+
+The application was also opened in a private browser session to verify public website accessibility.
+
+#### Deployment Considerations
+
+- Render's free hosting service may require additional startup time after inactivity.
+- The frontend demo login is intended for educational use only.
+- The backend customer endpoints are publicly accessible and are not suitable for storing real customer information.
+- Continued operation depends on the availability of the free hosting services and PostgreSQL database.
+
+**Result:** Stretch Goal Option 3 completed successfully through full-stack cloud deployment and functional verification.
 
 ### Stretch Goal Option 4: Publish Versioned Docker Images — Completed
 
@@ -331,11 +412,15 @@ The remaining findings have been documented for further applicability assessment
 
 The application passed Maven verification after the dependency updates.
 
-### Other Stretch Goals
+### Overall Stretch Goals Completion
 
-The remaining TaskFlow-related stretch goals have not been attempted at this stage.
+All five optional stretch goals have been completed and documented:
 
-Further stretch goals may be attempted if time and technical knowledge permit.
+1. CI Pipeline using GitHub Actions
+2. TaskFlow Frontend Deployment using Netlify
+3. Simple CRM Full-Stack Deployment using Netlify, Render and PostgreSQL
+4. Versioned Docker Images on Docker Hub
+5. OWASP Dependency-Check Security Scan
 
 ## Getting Started
 
